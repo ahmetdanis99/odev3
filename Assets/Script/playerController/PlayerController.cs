@@ -4,7 +4,7 @@ public class PlayerController : MainController
 {
     public RaycastHit hit;
     public Camera cam;
-    public float movespeedaq = 7f;
+
     public override void Start()
     {
         base.Start();
@@ -13,13 +13,19 @@ public class PlayerController : MainController
         stateMachine.RegisterState(new PlayerChaseState());
         stateMachine.RegisterState(new PlayerDeathState());
         stateMachine.RegisterState(new PlayerAttackState());
-        initialState = StateID.Idle;
-        stateMachine.ChangeState(initialState);
+        movespeed = 7f;
     }
     public override void Update()
     {
-        base.Update();
-        hit = hitRaycast();
+        isLive = setDead(playerProps);
+        if (isLive)
+        {
+            base.Update();
+            hit = hitRaycast();
+        }
+        else{
+            stateMachine.ChangeState(StateID.Death);
+        }
     }
     public bool KeyMove()
     {
@@ -41,10 +47,34 @@ public class PlayerController : MainController
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             Physics.Raycast(ray, out hit, Mathf.Infinity);
         }
+        setTarget(hit);
         return hit;
     }
     public void resetRayacast()
     {
         hit = new RaycastHit();
+    }
+
+    public void setTarget(RaycastHit hit)
+    {
+        if (hit.collider != null)
+        {
+            if (hit.collider.tag == "Enemy")
+            {
+                target = hit.collider.gameObject;
+            }
+            else
+            {
+                target = null;
+            }
+        }
+    }
+    public bool useEnv(KeyCode key)
+    {
+        if (Input.GetKeyDown(key))
+        {
+            return true;
+        }
+        return false;
     }
 }

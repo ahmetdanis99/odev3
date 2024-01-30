@@ -7,28 +7,48 @@ public class PlayerChaseState : State
     }
     public void Enter(MainController controller)
     {
-
+        controller.playerController.animate.SetBool("chase", true);
     }
 
     public void Exit(MainController controller)
     {
-
+        controller.playerController.animate.SetBool("chase", false);
     }
     public void Update(MainController controller)
     {
+
         if (controller.playerController.KeyMove() == true)
         {
-            Move(controller);
+            Move(controller.playerController);
         }
         if (controller.playerController.hit.collider != null)
         {
-            Move(controller, controller.playerController.hit);
+            if (controller.target != null)
+            {
+                Move(controller.playerController, controller.target);
+            }
+            else
+            {
+                Move(controller.playerController, controller.playerController.hit);
+            }
+        }
+        if (controller.target != null)
+        {
+            float distance = Vector3.Distance(controller.playerController.transform.position, controller.target.transform.position);
+            if (distance <= 4)
+            {
+                controller.stateMachine.ChangeState(StateID.Attack);
+            }
         }
         else
         {
             if (controller.agent.hasPath != true && controller.playerController.KeyMove() == false)
             {
-                controller.stateMachine.ChangeState(StateID.Idle);
+                if (controller.agent.remainingDistance <= 0)
+                {
+                    controller.stateMachine.ChangeState(StateID.Idle);
+
+                }
             }
         }
     }
@@ -40,20 +60,26 @@ public class PlayerChaseState : State
         }
         Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
         movement.Normalize();
-        movement *= controller.playerController.movespeedaq * Time.deltaTime;
+        movement *= controller.playerController.movespeed * Time.deltaTime;
 
-        mRotation(controller);
+        mRotation(controller.playerController);
 
         controller.playerController.transform.Translate(movement);
     }
     public void mRotation(MainController controller)
     {
         Quaternion tRotation = Quaternion.LookRotation(controller.playerController.cam.transform.forward);
+
         controller.playerController.transform.rotation = Quaternion.Slerp(controller.playerController.transform.rotation, tRotation, 10 * Time.deltaTime);
     }
     public void Move(MainController controller, RaycastHit hit)
     {
+
         controller.playerController.agent.SetDestination(hit.point);
         controller.playerController.resetRayacast();
+    }
+    public void Move(MainController controller, GameObject target)
+    {
+        controller.playerController.agent.SetDestination(target.transform.position);
     }
 }

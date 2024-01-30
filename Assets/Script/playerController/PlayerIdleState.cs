@@ -8,12 +8,12 @@ public class PlayerIdleState : State
     }
     public void Enter(MainController controller)
     {
-
+        controller.playerController.animate.SetBool("idle",true);
     }
 
     public void Exit(MainController controller)
     {
-
+        controller.playerController.animate.SetBool("idle",false);
     }
     public void Update(MainController controller)
     {

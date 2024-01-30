@@ -4,10 +4,6 @@ using UnityEngine;
 public class gamemanager : MonoBehaviour
 {
     public static gamemanager instance;
-    public Dictionary<string, int> defaultStats = new Dictionary<string, int>(){
-        {"health",100},
-        {"power",10}
-    };
     void Awake()
     {
         if (instance == null)
@@ -27,9 +23,6 @@ public class gamemanager : MonoBehaviour
 
     void Update()
     {
-
-    }
-    public void statUpdate(){
 
     }
 

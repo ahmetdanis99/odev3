@@ -6,6 +6,7 @@ public class StateMachine
     public MainController controller;
     public StateID currentState;
 
+
     public StateMachine(MainController controller)
     {
         this.controller = controller;

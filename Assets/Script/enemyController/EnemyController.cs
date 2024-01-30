@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyController : MainController
@@ -12,7 +10,18 @@ public class EnemyController : MainController
         stateMachine.RegisterState(new EnemyChaseState());
         stateMachine.RegisterState(new EnemyDeathState());
         stateMachine.RegisterState(new EnemyAttackState());
-        initialState = StateID.Idle;
-        stateMachine.ChangeState(initialState);
+    }
+
+    public override void Update()
+    {
+        isLive = setDead(playerProps);
+        if (isLive)
+        {
+            base.Update();
+        }
+        else
+        {
+            stateMachine.ChangeState(StateID.Death);
+        }
     }
 }
